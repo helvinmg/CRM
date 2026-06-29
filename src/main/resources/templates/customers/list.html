@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+<head>
+    <title>Customers - CRM Pro</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="glass-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="input-group" style="max-width: 300px;">
+                    <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-search text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Search customers...">
+                </div>
+                <a href="/customers/new" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Add Customer</a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Company</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="cust : ${customers}">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;" th:text="${#strings.substring(cust.customerName,0,1)}">
+                                        A
+                                    </div>
+                                    <a th:href="@{/customers/{id}(id=${cust.customerId})}" class="fw-bold text-dark text-decoration-none" th:text="${cust.customerName}">Name</a>
+                                </div>
+                            </td>
+                            <td th:text="${cust.companyName}">Company</td>
+                            <td th:text="${cust.email}">Email</td>
+                            <td th:text="${cust.phone}">Phone</td>
+                            <td class="text-end">
+                                <a th:href="@{/customers/{id}(id=${cust.customerId})}" class="btn btn-sm btn-light text-primary"><i class="fa-solid fa-eye"></i></a>
+                                <a th:href="@{/customers/{id}/edit(id=${cust.customerId})}" class="btn btn-sm btn-light text-warning"><i class="fa-solid fa-edit"></i></a>
+                                <form th:action="@{/customers/{id}/delete(id=${cust.customerId})}" method="post" class="d-inline" onsubmit="return confirmDelete('Are you sure you want to delete this customer?');">
+                                    <button type="submit" class="btn btn-sm btn-light text-danger"><i class="fa-solid fa-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(customers)}">
+                            <td colspan="5" class="text-center py-4 text-muted">No customers found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

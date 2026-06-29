@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+<head>
+    <title>Sales Pipeline Report - CRM Pro</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="glass-card mb-4">
+            <h5 class="mb-0 fw-bold">Sales Pipeline Report</h5>
+        </div>
+        <div class="glass-card">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Number of Leads</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="entry : ${reportData}">
+                        <td class="fw-bold"><span class="badge bg-primary" th:text="${entry.key}">Status</span></td>
+                        <td th:text="${entry.value}">Count</td>
+                    </tr>
+                    <tr th:if="${#maps.isEmpty(reportData)}">
+                        <td colspan="2" class="text-center text-muted py-4">No data available.</td>
+                    </tr>
+                </tbody>
+            </table>
+                </div>
+                <div class="col-md-6 p-4">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+            <a href="/reports" class="btn btn-light mt-3">Back to Reports</a>
+        </div>
+    </div>
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            document.addEventListener('DOMContentLoaded', function() {
+                const data = /*[[${reportData}]]*/ {};
+                const ctx = document.getElementById('salesChart');
+                if (ctx && Object.keys(data).length > 0) {
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(data),
+                            datasets: [{
+                                label: 'Leads',
+                                data: Object.values(data),
+                                backgroundColor: ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6f42c1']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            }
+                        }
+                    });
+                }
+            });
+            /*]]>*/
+        </script>
+    </th:block>
+</body>
+</html>

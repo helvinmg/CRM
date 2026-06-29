@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+<head>
+    <title>Task Form - CRM Pro</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
+            <form th:action="@{/tasks/new}" th:object="${task}" method="post">
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">TASK TITLE <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" th:field="*{title}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">LINKED LEAD <span class="text-danger">*</span></label>
+                    <select class="form-select" th:field="*{leadId}" required>
+                        <option value="">Select Lead...</option>
+                        <option th:each="l : ${leads}" th:value="${l.leadId}" th:text="${l.customerName + ' - ' + l.status}"></option>
+                    </select>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">ASSIGNED TO</label>
+                        <select class="form-select" th:field="*{assignedTo}">
+                            <option value="">Select Agent...</option>
+                            <option th:each="u : ${users}" th:value="${u.userId}" th:text="${u.fullName}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">PRIORITY</label>
+                        <select class="form-select" th:field="*{priority}">
+                            <option th:each="p : ${priorities}" th:value="${p}" th:text="${p}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">DUE DATE <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" th:field="*{dueDate}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">DESCRIPTION</label>
+                    <textarea class="form-control" th:field="*{description}" rows="3"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <a href="/tasks" class="btn btn-light">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

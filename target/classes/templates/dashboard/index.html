@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
+<head>
+    <title>Dashboard - CRM Pro</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- KPI Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="glass-card border-primary border-top border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 fw-bold small">TOTAL CUSTOMERS</p>
+                            <h3 class="mb-0 fw-bold" th:text="${summary.totalCustomers}">0</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                            <i class="fa-solid fa-users fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card border-warning border-top border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 fw-bold small">OPEN LEADS</p>
+                            <h3 class="mb-0 fw-bold" th:text="${summary.openLeads}">0</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 text-warning p-3 rounded-circle">
+                            <i class="fa-solid fa-funnel-dollar fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card border-danger border-top border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 fw-bold small">OVERDUE TASKS</p>
+                            <h3 class="mb-0 fw-bold text-danger" th:text="${summary.overdueTasks}">0</h3>
+                        </div>
+                        <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-circle">
+                            <i class="fa-solid fa-clock fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="glass-card border-success border-top border-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 fw-bold small">UPCOMING (7 DAYS)</p>
+                            <h3 class="mb-0 fw-bold" th:text="${summary.upcomingFollowUps}">0</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle">
+                            <i class="fa-solid fa-calendar-check fa-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="row g-4">
+            <!-- Pipeline Chart (Mocked for now) -->
+            <div class="col-md-6">
+                <div class="glass-card h-100">
+                    <h5 class="fw-bold mb-4">Pipeline Overview</h5>
+                    <div class="d-flex justify-content-center align-items-center h-75">
+                        <!-- We will implement Chart.js here, putting a placeholder -->
+                        <canvas id="pipelineChart" style="max-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Overdue Tasks -->
+            <div class="col-md-6">
+                <div class="glass-card h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Overdue Tasks</h5>
+                        <a href="/tasks?filter=overdue" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Priority</th>
+                                    <th>Due Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(overdueTasksList)}">
+                                    <td colspan="4" class="text-center text-muted py-4">No overdue tasks! You're all caught up.</td>
+                                </tr>
+                                <tr th:each="task : ${overdueTasksList}">
+                                    <td class="fw-bold" th:text="${task.title}">Title</td>
+                                    <td><span class="badge bg-danger" th:text="${task.priority}">Priority</span></td>
+                                    <td class="text-danger" th:text="${task.dueDate}">Date</td>
+                                    <td><a th:href="@{/tasks}" class="btn btn-sm btn-outline-secondary">View Tasks</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            document.addEventListener('DOMContentLoaded', function() {
+                const pipelineData = /*[[${pipelineData}]]*/ {};
+                const ctx = document.getElementById('pipelineChart');
+                
+                if (ctx && Object.keys(pipelineData).length > 0) {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(pipelineData),
+                            datasets: [{
+                                label: 'Number of Leads',
+                                data: Object.values(pipelineData),
+                                backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0', '#6c757d'],
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y', // Makes it a horizontal bar chart
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            onClick: (e, activeEls) => {
+                                if (activeEls.length > 0) {
+                                    window.location.href = '/leads';
+                                }
+                            }
+                        }
+                    });
+                } else if (ctx) {
+                    // Empty state
+                    const parent = ctx.parentElement;
+                    parent.innerHTML = '<p class="text-muted text-center w-100">No leads in pipeline.</p>';
+                }
+            });
+            /*]]>*/
+        </script>
+    </th:block>
+</body>
+</html>
