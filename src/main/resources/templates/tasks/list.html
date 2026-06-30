@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
 <head>
-    <title>Tasks - CRM Pro</title>
+    <title>Tasks - Flow</title>
 </head>
 <body>
     <div layout:fragment="content">
@@ -29,18 +29,22 @@
                         <tr th:each="task : ${tasks}">
                             <td class="fw-bold" th:text="${task.title}">Title</td>
                             <td>
-                                <span class="badge" th:classappend="${task.priority.name() == 'HIGH' ? 'bg-danger' : (task.priority.name() == 'MEDIUM' ? 'bg-warning' : 'bg-success')}" th:text="${task.priority}">PRIORITY</span>
+                                <span class="badge" th:classappend="${task.priority == 'HIGH' ? 'bg-danger' : (task.priority == 'MEDIUM' ? 'bg-warning' : 'bg-success')}" th:text="${task.priority}">PRIORITY</span>
                             </td>
                             <td th:text="${#temporals.format(task.dueDate, 'MMM dd, yyyy')}">Date</td>
                             <td th:text="${task.assignedUserName}">User</td>
                             <td>
-                                <span class="badge bg-secondary" th:if="${task.status.name() == 'PENDING'}">PENDING</span>
-                                <span class="badge bg-primary" th:if="${task.status.name() == 'IN_PROGRESS'}">IN PROGRESS</span>
-                                <span class="badge bg-success" th:if="${task.status.name() == 'COMPLETED'}">COMPLETED</span>
+                                <span class="badge bg-secondary" th:if="${task.status == 'PENDING'}">PENDING</span>
+                                <span class="badge bg-primary" th:if="${task.status == 'IN_PROGRESS'}">IN PROGRESS</span>
+                                <span class="badge bg-success" th:if="${task.status == 'COMPLETED'}">COMPLETED</span>
                             </td>
                             <td class="text-end">
-                                <form th:if="${task.status.name() != 'COMPLETED'}" th:action="@{/tasks/{id}/complete(id=${task.taskId})}" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-check"></i></button>
+                                <form th:action="@{/tasks/{id}/status(id=${task.taskId})}" method="post" class="d-inline">
+                                    <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                        <option value="PENDING" th:selected="${task.status == 'PENDING'}">PENDING</option>
+                                        <option value="IN_PROGRESS" th:selected="${task.status == 'IN_PROGRESS'}">IN PROGRESS</option>
+                                        <option value="COMPLETED" th:selected="${task.status == 'COMPLETED'}">COMPLETED</option>
+                                    </select>
                                 </form>
                             </td>
                         </tr>

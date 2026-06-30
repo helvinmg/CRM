@@ -4,7 +4,6 @@ import com.crm.dto.LeadDto;
 import com.crm.entity.Customer;
 import com.crm.entity.Lead;
 import com.crm.entity.User;
-import com.crm.enums.LeadStatus;
 import com.crm.exception.ResourceNotFoundException;
 import com.crm.repository.CustomerRepository;
 import com.crm.repository.LeadRepository;
@@ -17,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This is a Service layer class. It contains the core 'business logic' of our application. Controllers call services to fetch or modify data, and services interact with repositories to save those changes.
+ */
 @Service
 @RequiredArgsConstructor
 public class LeadServiceImpl implements LeadService {
@@ -24,6 +26,7 @@ public class LeadServiceImpl implements LeadService {
     private final LeadRepository leadRepository;
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
+    private final com.crm.repository.LeadStatusHistoryRepository leadStatusHistoryRepository;
 
     @Override
     public List<LeadDto> getAllLeads() {
@@ -60,6 +63,7 @@ public class LeadServiceImpl implements LeadService {
         Lead lead = Lead.builder()
                 .customer(customer)
                 .assignedTo(user)
+                .title(leadDto.getTitle())
                 .status(leadDto.getStatus())
                 .source(leadDto.getSource())
                 .expectedCloseDate(leadDto.getExpectedCloseDate())
@@ -79,6 +83,7 @@ public class LeadServiceImpl implements LeadService {
             lead.setAssignedTo(user);
         }
         
+        lead.setTitle(leadDto.getTitle());
         lead.setStatus(leadDto.getStatus());
         lead.setSource(leadDto.getSource());
         lead.setExpectedCloseDate(leadDto.getExpectedCloseDate());
@@ -95,11 +100,26 @@ public class LeadServiceImpl implements LeadService {
 
     @Override
     @Transactional
-    public LeadDto updateLeadStatus(Long id, LeadStatus status) {
+    public LeadDto updateLeadStatus(Long id, String status) {
         Lead lead = leadRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
-        lead.setStatus(status);
-        return mapToDto(leadRepository.save(lead));
+        
+        if (!lead.getStatus().equals(status)) {
+            // Log the change
+            com.crm.entity.LeadStatusHistory history = com.crm.entity.LeadStatusHistory.builder()
+                    .lead(lead)
+                    .oldStatus(lead.getStatus())
+                    .newStatus(status)
+                    // Normally we would get the logged in user here. We hardcode to Admin user ID 1 for now.
+                    .changedBy(userRepository.findById(1L).orElse(lead.getAssignedTo()))
+                    .build();
+            leadStatusHistoryRepository.save(history);
+            
+            lead.setStatus(status);
+            lead = leadRepository.save(lead);
+        }
+        
+        return mapToDto(lead);
     }
 
     private LeadDto mapToDto(Lead lead) {
@@ -109,6 +129,7 @@ public class LeadServiceImpl implements LeadService {
                 .customerName(lead.getCustomer().getCustomerName())
                 .assignedTo(lead.getAssignedTo() != null ? lead.getAssignedTo().getUserId() : null)
                 .assignedUserName(lead.getAssignedTo() != null ? lead.getAssignedTo().getFullName() : null)
+                .title(lead.getTitle())
                 .status(lead.getStatus())
                 .source(lead.getSource())
                 .expectedCloseDate(lead.getExpectedCloseDate())

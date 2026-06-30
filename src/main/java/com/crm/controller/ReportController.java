@@ -1,41 +1,76 @@
 package com.crm.controller;
 
+import com.crm.service.ReportService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@RestController
-@RequestMapping("/api/reports")
+/**
+ * This is a Spring MVC Web Controller. It acts as the bridge between the user's browser and our application. It listens for HTTP requests (like clicking a link or submitting a form), talks to the Service layer to get data, and then returns an HTML view (Thymeleaf template) for the user to see.
+ */
+@Controller
+@RequestMapping("/reports")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')") // Only users with the ADMIN role can access any methods in this controller
 public class ReportController {
 
-    // Simple mocks for the reports
+    private final ReportService reportService;
 
-    @GetMapping("/sales-pipeline")
-    public ResponseEntity<Map<String, Object>> getSalesPipeline() {
-        Map<String, Object> report = new HashMap<>();
-        report.put("message", "Sales Pipeline Report - Lead count by status");
-        return ResponseEntity.ok(report);
+    /**
+     * Handles GET requests to "/reports".
+     * Shows the main reports dashboard.
+     * 
+     * @param model Used to pass data to the view
+     * @return The "reports/index.html" template
+     */
+    @GetMapping
+    public String index(Model model) {
+        model.addAttribute("pageTitle", "Reports");
+        return "reports/index";
     }
 
-    @GetMapping("/task-activity")
-    public ResponseEntity<Map<String, Object>> getTaskActivity() {
-        Map<String, Object> report = new HashMap<>();
-        report.put("message", "Task Activity Report - Tasks by status/user");
-        return ResponseEntity.ok(report);
+    /**
+     * Handles GET requests to "/reports/sales".
+     * Displays a pipeline showing leads grouped by their status.
+     * 
+     * @param model Used to pass data to the view
+     * @return The "reports/sales.html" template
+     */
+    @GetMapping("/sales")
+    public String salesReport(Model model) {
+        model.addAttribute("reportData", reportService.getSalesPipelineReport());
+        model.addAttribute("pageTitle", "Sales Pipeline Report");
+        return "reports/sales";
     }
 
-    @GetMapping("/team-performance")
-    public ResponseEntity<Map<String, Object>> getTeamPerformance() {
-        Map<String, Object> report = new HashMap<>();
-        report.put("message", "Team Performance Report - Leads/tasks per user");
-        return ResponseEntity.ok(report);
+    /**
+     * Handles GET requests to "/reports/tasks".
+     * Displays tasks grouped by their current status.
+     * 
+     * @param model Used to pass data to the view
+     * @return The "reports/tasks.html" template
+     */
+    @GetMapping("/tasks")
+    public String taskReport(Model model) {
+        model.addAttribute("reportData", reportService.getTaskActivityReport());
+        model.addAttribute("pageTitle", "Task Activity Report");
+        return "reports/tasks";
+    }
+
+    /**
+     * Handles GET requests to "/reports/team".
+     * Displays performance metrics for the team.
+     * 
+     * @param model Used to pass data to the view
+     * @return The "reports/team.html" template
+     */
+    @GetMapping("/team")
+    public String teamReport(Model model) {
+        model.addAttribute("reportData", reportService.getTeamPerformanceReport());
+        model.addAttribute("pageTitle", "Team Performance Report");
+        return "reports/team";
     }
 }

@@ -4,7 +4,6 @@ import com.crm.dto.TaskDto;
 import com.crm.entity.Lead;
 import com.crm.entity.Task;
 import com.crm.entity.User;
-import com.crm.enums.TaskStatus;
 import com.crm.exception.ResourceNotFoundException;
 import com.crm.repository.LeadRepository;
 import com.crm.repository.TaskRepository;
@@ -17,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This is a Service layer class. It contains the core 'business logic' of our application. Controllers call services to fetch or modify data, and services interact with repositories to save those changes.
+ */
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
@@ -60,7 +62,7 @@ public class TaskServiceImpl implements TaskService {
                 .title(taskDto.getTitle())
                 .description(taskDto.getDescription())
                 .priority(taskDto.getPriority())
-                .status(TaskStatus.PENDING)
+                .status("PENDING")
                 .dueDate(taskDto.getDueDate())
                 .build();
         return mapToDto(taskRepository.save(task));
@@ -100,9 +102,15 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskDto markTaskComplete(Long id) {
+        return updateTaskStatus(id, "COMPLETED");
+    }
+
+    @Override
+    @Transactional
+    public TaskDto updateTaskStatus(Long id, String status) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
-        task.setStatus(TaskStatus.COMPLETED);
+        task.setStatus(status);
         return mapToDto(taskRepository.save(task));
     }
 

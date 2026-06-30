@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
 <head>
-    <title>Dashboard - CRM Pro</title>
+    <title>Dashboard - Flow</title>
 </head>
 <body>
     <div layout:fragment="content">
@@ -67,9 +67,8 @@
             <div class="col-md-6">
                 <div class="glass-card h-100">
                     <h5 class="fw-bold mb-4">Pipeline Overview</h5>
-                    <div class="d-flex justify-content-center align-items-center h-75">
-                        <!-- We will implement Chart.js here, putting a placeholder -->
-                        <canvas id="pipelineChart" style="max-height: 300px;"></canvas>
+                    <div class="d-flex justify-content-center align-items-center" style="min-height: 450px;">
+                        <canvas id="pipelineChart" style="min-height: 400px;"></canvas>
                     </div>
                 </div>
             </div>
@@ -117,23 +116,55 @@
                 const ctx = document.getElementById('pipelineChart');
                 
                 if (ctx && Object.keys(pipelineData).length > 0) {
+                    // Force the logical order of a sales pipeline rather than random HashMap order
+                    const statusOrder = ["NEW", "CONTACTED", "QUALIFIED", "PROPOSAL", "NEGOTIATION", "CLOSED_WON", "CLOSED_LOST"];
+                    const sortedLabels = [];
+                    const sortedData = [];
+                    
+                    statusOrder.forEach(status => {
+                        if (pipelineData[status] !== undefined) {
+                            sortedLabels.push(status);
+                            sortedData.push(pipelineData[status]);
+                        }
+                    });
+
                     new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: Object.keys(pipelineData),
+                            labels: sortedLabels,
                             datasets: [{
                                 label: 'Number of Leads',
-                                data: Object.values(pipelineData),
-                                backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0', '#6c757d'],
-                                borderRadius: 4
+                                data: sortedData,
+                                backgroundColor: ['#0d6efd', '#0dcaf0', '#ffc107', '#fd7e14', '#6f42c1', '#198754', '#dc3545'],
+                                borderWidth: 1,
+                                barThickness: 35
                             }]
                         },
                         options: {
-                            indexAxis: 'y', // Makes it a horizontal bar chart
+                            indexAxis: 'y',
                             responsive: true,
                             maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    ticks: {
+                                        autoSkip: false
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        precision: 0,
+                                        stepSize: 1
+                                    }
+                                }
+                            },
                             plugins: {
-                                legend: { display: false }
+                                legend: { 
+                                    display: false 
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Pipeline Leads by Status'
+                                }
                             },
                             onClick: (e, activeEls) => {
                                 if (activeEls.length > 0) {

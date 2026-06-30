@@ -1,6 +1,5 @@
 package com.crm.entity;
 
-import com.crm.enums.LeadStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * This class is a Database Entity. It tells Hibernate/JPA how to map Java objects directly into rows in the relational database table.
+ */
 @Entity
 @Table(name = "leads")
 @Getter
@@ -28,10 +30,11 @@ public class Lead {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LeadStatus status;
+    private String status;
+
+    @Column(length = 150)
+    private String title;
 
     @Column(length = 100)
     private String source;

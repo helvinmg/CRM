@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
 <head>
-    <title>Team Performance Report - CRM Pro</title>
+    <title>Team Performance Report - Flow</title>
 </head>
 <body>
     <div layout:fragment="content">
@@ -32,7 +32,9 @@
             </table>
                 </div>
                 <div class="col-md-6 p-4">
-                    <canvas id="teamChart"></canvas>
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="teamChart"></canvas>
+                    </div>
                 </div>
             </div>
             <a href="/reports" class="btn btn-light mt-3">Back to Reports</a>
@@ -68,8 +70,18 @@
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Team Performance Overview'
+                                }
+                            },
                             scales: {
-                                y: { beginAtZero: true }
+                                y: { 
+                                    beginAtZero: true,
+                                    ticks: { precision: 0, stepSize: 1 }
+                                }
                             }
                         }
                     });

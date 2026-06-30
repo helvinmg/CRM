@@ -1,7 +1,5 @@
 package com.crm.entity;
 
-import com.crm.enums.TaskPriority;
-import com.crm.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * This class is a Database Entity. It tells Hibernate/JPA how to map Java objects directly into rows in the relational database table.
+ */
 @Entity
 @Table(name = "tasks")
 @Getter
@@ -35,14 +36,10 @@ public class Task {
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TaskPriority priority;
-
-    @Enumerated(EnumType.STRING)
+    private String priority;
     @Column(nullable = false)
-    private TaskStatus status;
+    private String status;
 
     @Column(nullable = false)
     private LocalDate dueDate;

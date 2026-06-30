@@ -1,6 +1,5 @@
 package com.crm.entity;
 
-import com.crm.enums.InteractionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * This class is a Database Entity. It tells Hibernate/JPA how to map Java objects directly into rows in the relational database table.
+ */
 @Entity
 @Table(name = "interactions")
 @Getter
@@ -28,10 +30,8 @@ public class Interaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private InteractionType interactionType;
+    private String interactionType;
 
     @Column(length = 200)
     private String subject;

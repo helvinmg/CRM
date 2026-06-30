@@ -1,13 +1,14 @@
 package com.crm.entity;
 
-import com.crm.enums.UserRole;
-import com.crm.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
+/**
+ * This class is a Database Entity. It tells Hibernate/JPA how to map Java objects directly into rows in the relational database table.
+ */
 @Entity
 @Table(name = "users")
 @Getter
@@ -29,15 +30,11 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserRole role;
-
-    @Enumerated(EnumType.STRING)
+    private String role;
     @Column(nullable = false)
     @Builder.Default
-    private UserStatus status = UserStatus.ACTIVE;
+    private String status = "ACTIVE";
 
     @CreationTimestamp
     @Column(updatable = false)

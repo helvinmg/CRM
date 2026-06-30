@@ -2,7 +2,6 @@ package com.crm.service.impl;
 
 import com.crm.dto.UserDto;
 import com.crm.entity.User;
-import com.crm.enums.UserStatus;
 import com.crm.exception.ResourceNotFoundException;
 import com.crm.repository.UserRepository;
 import com.crm.service.UserService;
@@ -14,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This is a Service layer class. It contains the core 'business logic' of our application. Controllers call services to fetch or modify data, and services interact with repositories to save those changes.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
     public void deactivateUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        user.setStatus(UserStatus.INACTIVE);
+        user.setStatus("INACTIVE");
         userRepository.save(user);
     }
 
@@ -59,6 +61,22 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    @Override
+    @Transactional
+    public void updateUserProfile(String email, String fullName) {
+        User user = findByEmail(email);
+        user.setFullName(fullName);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String email, String newPassword) {
+        User user = findByEmail(email);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 
     private UserDto mapToDto(User user) {

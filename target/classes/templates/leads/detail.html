@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
 <head>
-    <title>Lead Details - CRM Pro</title>
+    <title>Lead Details - Flow</title>
 </head>
 <body>
     <div layout:fragment="content">
         <!-- Pipeline Progress Bar -->
         <div class="glass-card mb-4 p-4">
-            <h4 class="fw-bold mb-4" th:text="${lead.customerName + ' - Lead'}">Lead</h4>
+            <h4 class="fw-bold mb-4" th:text="${lead.title + ' (' + lead.customerName + ')'}">Lead</h4>
             <div class="d-flex justify-content-between position-relative">
                 <div class="position-absolute top-50 start-0 w-100 bg-light" style="height: 4px; z-index: 1;"></div>
                 <div class="position-absolute top-50 start-0 bg-primary" style="height: 4px; z-index: 2; width: 50%;"></div> <!-- Width should be dynamic based on status index -->
                 
                 <div class="position-relative text-center" style="z-index: 3;" th:each="s : ${statuses}">
                     <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 border border-3"
-                         th:classappend="${lead.status.name() == s.name() ? 'bg-primary border-primary text-white' : 'bg-white border-light text-muted'}"
+                         th:classappend="${lead.status == s ? 'bg-primary border-primary text-white' : 'bg-white border-light text-muted'}"
                          style="width: 40px; height: 40px;">
-                        <i class="fa-solid fa-check" th:if="${lead.status.name() == s.name()}"></i>
-                        <span th:unless="${lead.status.name() == s.name()}" th:text="${sStat.index + 1}"></span>
+                        <i class="fa-solid fa-check" th:if="${lead.status == s}"></i>
+                        <span th:unless="${lead.status == s}" th:text="${sStat.index + 1}"></span>
                     </div>
                     <span class="small fw-bold text-muted d-block" th:text="${s}">STATUS</span>
                 </div>
@@ -39,7 +39,7 @@
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="glass-card h-100">
+                <div class="glass-card mb-4">
                     <h6 class="fw-bold text-muted small mb-3">LEAD DETAILS</h6>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-3">
@@ -55,6 +55,22 @@
                             <span th:text="${lead.expectedCloseDate != null ? #temporals.format(lead.expectedCloseDate, 'MMM dd, yyyy') : 'N/A'}">Date</span>
                         </li>
                     </ul>
+                </div>
+                
+                <div class="glass-card h-100">
+                    <h6 class="fw-bold text-muted small mb-3">STATUS HISTORY (AUDIT LOG)</h6>
+                    <div th:if="${#lists.isEmpty(history)}" class="text-center text-muted py-4">No history logged yet.</div>
+                    <div class="timeline position-relative" th:if="${not #lists.isEmpty(history)}">
+                        <div class="border-start border-2 ms-2 ps-3 py-2 position-relative" th:each="hist : ${history}">
+                            <div class="position-absolute bg-primary rounded-circle" style="width: 10px; height: 10px; left: -6px; top: 15px;"></div>
+                            <div class="mb-1">
+                                <span class="badge bg-secondary me-1" th:text="${hist.oldStatus}">OLD</span>
+                                <i class="fa-solid fa-arrow-right text-muted small"></i>
+                                <span class="badge bg-primary ms-1" th:text="${hist.newStatus}">NEW</span>
+                            </div>
+                            <small class="text-muted d-block" th:text="${'By ' + hist.changedBy.fullName + ' on ' + #temporals.format(hist.changeDate, 'MMM dd, yyyy HH:mm')}"></small>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-md-8">

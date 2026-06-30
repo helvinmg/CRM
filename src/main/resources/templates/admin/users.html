@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
 <head>
-    <title>User Management - CRM Pro</title>
+    <title>User Management - Flow</title>
 </head>
 <body>
     <div layout:fragment="content">
@@ -37,10 +37,10 @@
                             <td th:text="${user.email}">Email</td>
                             <td><span class="badge bg-secondary" th:text="${user.role}">ROLE</span></td>
                             <td>
-                                <span class="badge" th:classappend="${user.status.name() == 'ACTIVE' ? 'bg-success' : 'bg-danger'}" th:text="${user.status}">STATUS</span>
+                                <span class="badge" th:classappend="${user.status == 'ACTIVE' ? 'bg-success' : 'bg-danger'}" th:text="${user.status}">STATUS</span>
                             </td>
                             <td class="text-end">
-                                <form th:if="${user.status.name() == 'ACTIVE'}" th:action="@{/admin/users/{id}/deactivate(id=${user.userId})}" method="post" class="d-inline">
+                                <form th:if="${user.status == 'ACTIVE'}" th:action="@{/admin/users/{id}/deactivate(id=${user.userId})}" method="post" class="d-inline">
                                     <button type="submit" class="btn btn-sm btn-light text-danger" title="Deactivate" onclick="return confirm('Are you sure you want to deactivate this user?')"><i class="fa-solid fa-ban"></i></button>
                                 </form>
                             </td>

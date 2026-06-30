@@ -3,8 +3,6 @@ package com.crm.service;
 import com.crm.entity.Lead;
 import com.crm.entity.Task;
 import com.crm.entity.User;
-import com.crm.enums.LeadStatus;
-import com.crm.enums.TaskStatus;
 import com.crm.repository.LeadRepository;
 import com.crm.repository.TaskRepository;
 import com.crm.repository.UserRepository;
@@ -16,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This is a Service layer class. It contains the core 'business logic' of our application. Controllers call services to fetch or modify data, and services interact with repositories to save those changes.
+ */
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -24,12 +25,12 @@ public class ReportService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
-    public Map<LeadStatus, Long> getSalesPipelineReport() {
+    public Map<String, Long> getSalesPipelineReport() {
         List<Lead> allLeads = leadRepository.findAll();
         return allLeads.stream().collect(Collectors.groupingBy(Lead::getStatus, Collectors.counting()));
     }
 
-    public Map<TaskStatus, Long> getTaskActivityReport() {
+    public Map<String, Long> getTaskActivityReport() {
         List<Task> allTasks = taskRepository.findAll();
         return allTasks.stream().collect(Collectors.groupingBy(Task::getStatus, Collectors.counting()));
     }

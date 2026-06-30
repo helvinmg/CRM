@@ -7,6 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * This class is a Database Entity. It tells Hibernate/JPA how to map Java objects directly into rows in the relational database table.
+ */
 @Entity
 @Table(name = "customers")
 @Getter

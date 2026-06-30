@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/base}">
 <head>
-    <title>Sales Pipeline Report - CRM Pro</title>
+    <title>Sales Pipeline Report - Flow</title>
 </head>
 <body>
     <div layout:fragment="content">
@@ -30,7 +30,9 @@
             </table>
                 </div>
                 <div class="col-md-6 p-4">
-                    <canvas id="salesChart"></canvas>
+                    <div style="position: relative; height: 350px;">
+                        <canvas id="salesChart"></canvas>
+                    </div>
                 </div>
             </div>
             <a href="/reports" class="btn btn-light mt-3">Back to Reports</a>
@@ -55,8 +57,13 @@
                         },
                         options: {
                             responsive: true,
+                            maintainAspectRatio: false,
                             plugins: {
-                                legend: { position: 'bottom' }
+                                legend: { position: 'bottom' },
+                                title: {
+                                    display: true,
+                                    text: 'Sales Pipeline Distribution'
+                                }
                             }
                         }
                     });
